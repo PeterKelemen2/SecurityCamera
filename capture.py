@@ -92,7 +92,8 @@ def capture_image():
             os.mkdir(output_path)
 
         frame = adjust_frame(frame)
-        main_ui.frame_buffer.append(frame)
+        if not main_ui.is_paused:
+            main_ui.frame_buffer.append(frame)
         # Convert frames to grayscale for easier difference calculation
         gray_prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)

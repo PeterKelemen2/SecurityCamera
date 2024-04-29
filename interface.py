@@ -1,6 +1,6 @@
 import datetime
 import time
-from tkinter import Label, Tk
+from tkinter import Label, Tk, Button
 
 import cv2
 from PIL import Image, ImageTk
@@ -9,7 +9,7 @@ import capture
 import custom_ui
 
 WIN_WIDTH = 695
-WIN_HEIGHT = 535
+WIN_HEIGHT = 600
 
 BG = "#202331"
 ACCENT = "#303754"
@@ -39,6 +39,13 @@ class Interface:
             self.frame_buffer = []
         self.win.after(32, self.schedule_frame_update)
 
+    def toggle_stream(self):
+        self.is_paused = not self.is_paused
+        if self.is_paused is True:
+            self.pause_stream_button.config(text="Resume")
+        else:
+            self.pause_stream_button.config(text="Pause")
+
     def update_frame(self, im=None):
         if self.frame_label is not None:
             # date = f"{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}"
@@ -51,14 +58,19 @@ class Interface:
     def __init__(self):
         self.win = None
         self.frame_buffer = []
+        self.is_paused = False
         self.create_window()
 
-        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=665, height=505, bg=BG, fill=ACCENT)
+        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=665, height=535, bg=BG, fill=ACCENT)
         self.frame_container.canvas.place(x=15, y=15)
 
         self.frame_label = Label(self.frame_container.canvas, bg=ACCENT, fg="white",
                                  text="Loading camera feed...")
         self.frame_label.place(x=10, y=10)
+
+        self.pause_stream_button = Button(self.frame_container.canvas, text="Pause", bg=ACCENT, fg="white", width=15,
+                                          command=self.toggle_stream)
+        self.pause_stream_button.place(x=20, y=500)
 
         global ui
         ui = self
