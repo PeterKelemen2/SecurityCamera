@@ -13,7 +13,6 @@ WIN_HEIGHT = 600
 
 BG = "#202331"
 ACCENT = "#303754"
-PALENIGHT_PB = "#78408f"
 
 ui = None
 
@@ -37,6 +36,11 @@ class Interface:
         if self.frame_buffer:
             self.update_frame(self.frame_buffer[0])
             self.frame_buffer = []
+
+        # if capture.recording:
+        #     self.rec_indicator.place(x=150, y=500)
+        # else:
+        #     self.rec_indicator.place_forget()
         self.win.after(32, self.schedule_frame_update)
 
     def toggle_stream(self):
@@ -57,7 +61,8 @@ class Interface:
         self.is_paused = False
         self.create_window()
 
-        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=665, height=535, bg=BG, fill=ACCENT)
+        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=665, height=WIN_HEIGHT - 30, bg=BG,
+                                                          fill=ACCENT)
         self.frame_container.canvas.place(x=15, y=15)
 
         self.frame_label = Label(self.frame_container.canvas, bg=ACCENT, fg="white",
@@ -67,6 +72,9 @@ class Interface:
         self.pause_stream_button = Button(self.frame_container.canvas, text="Pause", bg=ACCENT, fg="white", width=15,
                                           command=self.toggle_stream)
         self.pause_stream_button.place(x=20, y=500)
+
+        # self.rec_indicator = Label(self.frame_container.canvas, text="Recording...", bg=ACCENT, fg="white")
+        # self.rec_indicator.place(x=120, y=500)
 
         global ui
         ui = self

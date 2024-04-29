@@ -1,4 +1,5 @@
 from datetime import datetime
+from PIL import Image
 import os.path
 import threading
 import time
@@ -9,6 +10,7 @@ import numpy as np
 import interface
 
 output_path = "videos"
+circle = "assets/rec.png"
 # Set the font, scale, color, and thickness
 font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.5
@@ -20,6 +22,17 @@ recording = False
 thread = None
 
 stop_thread_event: threading.Event = None
+
+
+def add_rec_indicator(frame):
+    # Create a red circle mask
+    height, width, _ = frame.shape
+    circle_mask = np.zeros((height, width, 3), dtype=np.uint8)
+    # cv2.circle(circle_mask, (40, 40), 20, (0, 0, 255), -1)  # Draw a red circle
+    cv2.circle(frame, (40, 40), 20, (0, 0, 255), -1, lineType=cv2.LINE_AA)  # Draw a solid red circle
+    # Overlay the red circle mask onto the frame
+    cv2.putText(frame, "Recording...", (75, 47), font, 0.8, (255, 255, 255), lineType=cv2.LINE_AA)
+    return frame
 
 
 def add_text(frame):
@@ -93,7 +106,10 @@ def capture_image():
 
         frame = adjust_frame(frame)
         if not main_ui.is_paused:
-            main_ui.frame_buffer.append(frame)
+            if recording:
+                main_ui.frame_buffer.append(add_rec_indicator(frame))
+            else:
+                main_ui.frame_buffer.append(frame)
         # Convert frames to grayscale for easier difference calculation
         gray_prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
