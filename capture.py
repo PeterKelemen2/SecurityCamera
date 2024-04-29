@@ -1,4 +1,5 @@
 import datetime
+import os.path
 
 import cv2
 import numpy as np
@@ -12,7 +13,6 @@ line_type = 2
 
 
 def add_text(frame):
-    # Get text size
     date_time = f"{datetime.datetime.now().strftime("%Y. %m. %d. %H:%M:%S")}"
     text_size, _ = cv2.getTextSize(date_time, font, font_scale, line_type)
     text_x = frame.shape[1] - text_size[0] - 10  # 10 pixels from the right edge
@@ -34,15 +34,9 @@ def adjust_frame(frame):
 
 
 def set_fixed_white_balance(cap):
-    # Check if the camera can handle manual white balance settings
-    # '17' is generally the property id for white balance in VideoCaptureProperties
-    # The exact property ID can be different based on the camera driver
     if cap.get(cv2.CAP_PROP_AUTO_WB) is not None:
-        # Turn off auto white balance
         cap.set(cv2.CAP_PROP_AUTO_WB, 0)
-        # Set a specific white balance value
-        # This value is an example; you'll need to modify it according to your needs/environment
-        cap.set(cv2.CAP_PROP_WB_TEMPERATURE, 4500)  # Example for setting white balance to 4500K
+        cap.set(cv2.CAP_PROP_WB_TEMPERATURE, 4500)
     else:
         print("This camera does not support manual white balance settings.")
 
@@ -79,6 +73,9 @@ def capture_image():
         if not ret:
             print("Error: Can't receive frame (stream end?). Exiting ...")
             break
+
+        if os.path.exists(output_path):
+            os.mkdir(output_path)
 
         frame = adjust_frame(frame)
 
