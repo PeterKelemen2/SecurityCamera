@@ -22,13 +22,14 @@ stop_thread_event: threading.Event = None
 
 
 def add_text(frame):
+    new_frame = np.copy(frame)
     date_time = f"{datetime.datetime.now().strftime("%Y. %m. %d. %H:%M:%S")}"
     text_size, _ = cv2.getTextSize(date_time, font, font_scale, line_type)
-    text_x = frame.shape[1] - text_size[0] - 10  # 10 pixels from the right edge
-    text_y = frame.shape[0] - 10  # 10 pixels from the bottom
+    text_x = new_frame.shape[1] - text_size[0] - 10  # 10 pixels from the right edge
+    text_y = new_frame.shape[0] - 10  # 10 pixels from the bottom
 
-    cv2.putText(frame, date_time, (text_x, text_y), font, font_scale, font_color, line_type)
-    return frame
+    cv2.putText(new_frame, date_time, (text_x, text_y), font, font_scale, font_color, line_type)
+    return new_frame
 
 
 def adjust_frame(frame):
@@ -67,7 +68,7 @@ def capture_image():
     output_path = f"{output_path}/video-{date}.mp4"
     print(output_path)
     writer = cv2.VideoWriter(output_path, codec, fps, (w, h))
-    frame_array = []
+
     if not cap.isOpened():
         print("Unable to open camera")
         return
@@ -107,21 +108,14 @@ def capture_image():
         total_pixels = thresh_diff.size
         percent_change = f"{((significant_changes / total_pixels) * 100):.2f}"
 
-        # print(f"{percent_change}")
-
         if float(percent_change) > 5.0:
-            if len(main_ui.frame_buffer) > 5:
-                for f in frame_array:
-                    f = add_text(f)
-                    writer.write(f)
-                frame_array = []
+            writer.write(add_text(frame))
 
         # Update previous frame
         prev_frame = frame.copy()
 
     cap.release()
-    if stop_thread_event.is_set():
-        writer.release()
+    writer.release()
 
 
 def run_capture_on_thread():
