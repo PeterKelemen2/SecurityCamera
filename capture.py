@@ -1,8 +1,11 @@
 import datetime
 import os.path
+import threading
 
 import cv2
 import numpy as np
+
+import interface
 
 output_path = "videos"
 # Set the font, scale, color, and thickness
@@ -10,6 +13,12 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.5
 font_color = (0, 255, 0)  # white color
 line_type = 2
+
+main_ui = None
+
+thread = None
+
+stop_thread_event: threading.Event = None
 
 
 def add_text(frame):
@@ -42,6 +51,10 @@ def set_fixed_white_balance(cap):
 
 
 def capture_image():
+    global main_ui, stop_thread_event
+    main_ui = interface.ui
+    stop_thread_event = threading.Event()
+
     cap = cv2.VideoCapture(0)
     w, h, fps = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), 30.0
     codec = cv2.VideoWriter_fourcc(*'H264')
@@ -68,17 +81,19 @@ def capture_image():
 
     set_fixed_white_balance(cap)
 
-    while True:
+    while not stop_thread_event.is_set():
         ret, frame = cap.read()
         if not ret:
             print("Error: Can't receive frame (stream end?). Exiting ...")
             break
 
-        if os.path.exists(output_path):
+        if not os.path.exists(output_path):
             os.mkdir(output_path)
 
         frame = adjust_frame(frame)
-
+        # main_ui.update_frame(frame)
+        # interface.frame_buffer.append(frame)
+        main_ui.frame_buffer.append(frame)
         # Convert frames to grayscale for easier difference calculation
         gray_prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -98,8 +113,8 @@ def capture_image():
 
         if float(percent_change) > 5.0:
             frame_array.append(frame)
-            cv2.imshow('Frame Difference', frame_diff)
-            cv2.imshow('Thresholded Difference', thresh_diff)
+            # cv2.imshow('Frame Difference', frame_diff)
+            # cv2.imshow('Thresholded Difference', thresh_diff)
             if len(frame_array) > 5:
                 for f in frame_array:
                     f = add_text(f)
@@ -113,10 +128,22 @@ def capture_image():
         # Update previous frame
         prev_frame = frame.copy()
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            writer.release()
-            break
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     writer.release()
+        #     break
 
     cap.release()
-    # writer.release()
-    cv2.destroyAllWindows()
+    if stop_thread_event.is_set():
+        writer.release()
+    # cv2.destroyAllWindows()
+
+
+def run_capture_on_thread():
+    global thread
+    thread = threading.Thread(target=capture_image)
+    thread.start()
+
+
+def set_stop_thread_event():
+    global stop_thread_event
+    stop_thread_event.set()

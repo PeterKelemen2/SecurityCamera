@@ -1,8 +1,10 @@
 import capture
+import interface
 
 
 def main():
-    capture.capture_image()
+    # capture.capture_image()
+    user_interface = interface.Interface()
 
 
 if __name__ == '__main__':
