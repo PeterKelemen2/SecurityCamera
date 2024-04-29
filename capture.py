@@ -1,6 +1,7 @@
-import datetime
+from datetime import datetime
 import os.path
 import threading
+import time
 
 import cv2
 import numpy as np
@@ -15,7 +16,7 @@ font_color = (0, 255, 0)  # white color
 line_type = 2
 
 main_ui = None
-
+recording = False
 thread = None
 
 stop_thread_event: threading.Event = None
@@ -23,7 +24,7 @@ stop_thread_event: threading.Event = None
 
 def add_text(frame):
     new_frame = np.copy(frame)
-    date_time = f"{datetime.datetime.now().strftime("%Y. %m. %d. %H:%M:%S")}"
+    date_time = f"{datetime.now().strftime("%Y. %m. %d. %H:%M:%S")}"
     text_size, _ = cv2.getTextSize(date_time, font, font_scale, line_type)
     text_x = new_frame.shape[1] - text_size[0] - 10  # 10 pixels from the right edge
     text_y = new_frame.shape[0] - 10  # 10 pixels from the bottom
@@ -42,6 +43,7 @@ def adjust_frame(frame):
     sharpened_image = cv2.filter2D(blurred, -1, sharpening_kernel)
     return sharpened_image
 
+
 def set_fixed_white_balance(cap):
     if cap.get(cv2.CAP_PROP_AUTO_WB) is not None:
         cap.set(cv2.CAP_PROP_AUTO_WB, 0)
@@ -51,7 +53,9 @@ def set_fixed_white_balance(cap):
 
 
 def capture_image():
-    global main_ui, stop_thread_event
+    global main_ui, stop_thread_event, output_path, recording
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
     main_ui = interface.ui
     stop_thread_event = threading.Event()
 
@@ -61,11 +65,11 @@ def capture_image():
 
     print(w, h, fps)
 
-    date = f"{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}"
+    date = f"{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}"
 
-    global output_path
     output_path = f"{output_path}/video-{date}.mp4"
     print(output_path)
+
     writer = cv2.VideoWriter(output_path, codec, fps, (w, h))
 
     if not cap.isOpened():
@@ -87,9 +91,6 @@ def capture_image():
             print("Error: Can't receive frame (stream end?). Exiting ...")
             break
 
-        if not os.path.exists(output_path):
-            os.mkdir(output_path)
-
         frame = adjust_frame(frame)
         if not main_ui.is_paused:
             main_ui.frame_buffer.append(frame)
@@ -108,8 +109,21 @@ def capture_image():
         total_pixels = thresh_diff.size
         percent_change = f"{((significant_changes / total_pixels) * 100):.2f}"
 
+        print(f"Change: {percent_change}% | Recording: {recording}")
+
+        if recording is False:
+            rec_start_time = None
+
         if float(percent_change) > 5.0:
+            rec_start_time = time.time()
             writer.write(add_text(frame))
+            if recording is False:
+                recording = True
+
+        if recording is True and rec_start_time is not None:
+            writer.write(add_text(frame))
+            if int(time.time() - rec_start_time) > 2:
+                recording = False
 
         # Update previous frame
         prev_frame = frame.copy()
