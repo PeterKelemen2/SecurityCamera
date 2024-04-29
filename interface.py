@@ -47,12 +47,8 @@ class Interface:
             self.pause_stream_button.config(text="Pause")
 
     def update_frame(self, im=None):
-        if self.frame_label is not None:
-            # date = f"{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}"
-            # self.frame_label.config(text=date)
-            self.frame_rgb = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-            self.image = Image.fromarray(self.frame_rgb)
-            self.image_file = ImageTk.PhotoImage(self.image)
+        if self.frame_label is not None and im is not None:
+            self.image_file = ImageTk.PhotoImage(Image.fromarray(cv2.cvtColor(im, cv2.COLOR_BGR2RGB)))
             self.frame_label.config(image=self.image_file)
 
     def __init__(self):

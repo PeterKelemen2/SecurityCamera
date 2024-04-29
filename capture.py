@@ -42,7 +42,6 @@ def adjust_frame(frame):
     sharpened_image = cv2.filter2D(blurred, -1, sharpening_kernel)
     return sharpened_image
 
-
 def set_fixed_white_balance(cap):
     if cap.get(cv2.CAP_PROP_AUTO_WB) is not None:
         cap.set(cv2.CAP_PROP_AUTO_WB, 0)
