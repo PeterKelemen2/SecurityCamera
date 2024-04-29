@@ -13,7 +13,7 @@ output_path = "videos"
 circle = "assets/rec.png"
 # Set the font, scale, color, and thickness
 font = cv2.FONT_HERSHEY_SIMPLEX
-font_scale = 0.5
+font_scale = 0.7
 font_color = (0, 255, 0)  # white color
 line_type = 2
 
@@ -25,14 +25,11 @@ stop_thread_event: threading.Event = None
 
 
 def add_rec_indicator(frame):
-    # Create a red circle mask
-    height, width, _ = frame.shape
-    circle_mask = np.zeros((height, width, 3), dtype=np.uint8)
-    # cv2.circle(circle_mask, (40, 40), 20, (0, 0, 255), -1)  # Draw a red circle
-    cv2.circle(frame, (40, 40), 20, (0, 0, 255), -1, lineType=cv2.LINE_AA)  # Draw a solid red circle
-    # Overlay the red circle mask onto the frame
-    cv2.putText(frame, "Recording...", (75, 47), font, 0.8, (255, 255, 255), lineType=cv2.LINE_AA)
-    return frame
+    new_frame = frame.copy()
+    height, width, _ = new_frame.shape
+    cv2.circle(new_frame, (40, 40), 20, (0, 0, 255), -1, lineType=cv2.LINE_AA)
+    cv2.putText(new_frame, "Recording...", (75, 47), font, 0.8, (255, 255, 255), lineType=cv2.LINE_AA)
+    return new_frame
 
 
 def add_text(frame):
@@ -42,7 +39,7 @@ def add_text(frame):
     text_x = new_frame.shape[1] - text_size[0] - 10  # 10 pixels from the right edge
     text_y = new_frame.shape[0] - 10  # 10 pixels from the bottom
 
-    cv2.putText(new_frame, date_time, (text_x, text_y), font, font_scale, font_color, line_type)
+    cv2.putText(new_frame, date_time, (text_x, text_y), font, font_scale, font_color, lineType=cv2.LINE_AA)
     return new_frame
 
 

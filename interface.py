@@ -73,9 +73,6 @@ class Interface:
                                           command=self.toggle_stream)
         self.pause_stream_button.place(x=20, y=500)
 
-        # self.rec_indicator = Label(self.frame_container.canvas, text="Recording...", bg=ACCENT, fg="white")
-        # self.rec_indicator.place(x=120, y=500)
-
         global ui
         ui = self
 
