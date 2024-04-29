@@ -91,8 +91,6 @@ def capture_image():
             os.mkdir(output_path)
 
         frame = adjust_frame(frame)
-        # main_ui.update_frame(frame)
-        # interface.frame_buffer.append(frame)
         main_ui.frame_buffer.append(frame)
         # Convert frames to grayscale for easier difference calculation
         gray_prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
@@ -112,30 +110,18 @@ def capture_image():
         # print(f"{percent_change}")
 
         if float(percent_change) > 5.0:
-            frame_array.append(frame)
-            # cv2.imshow('Frame Difference', frame_diff)
-            # cv2.imshow('Thresholded Difference', thresh_diff)
-            if len(frame_array) > 5:
+            if len(main_ui.frame_buffer) > 5:
                 for f in frame_array:
                     f = add_text(f)
                     writer.write(f)
                 frame_array = []
 
-        # Display the difference and the thresholded difference
-        # cv2.imshow('Frame Difference', frame_diff)
-        # cv2.imshow('Thresholded Difference', thresh_diff)
-
         # Update previous frame
         prev_frame = frame.copy()
-
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     writer.release()
-        #     break
 
     cap.release()
     if stop_thread_event.is_set():
         writer.release()
-    # cv2.destroyAllWindows()
 
 
 def run_capture_on_thread():

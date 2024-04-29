@@ -8,8 +8,8 @@ from PIL import Image, ImageTk
 import capture
 import custom_ui
 
-WIN_WIDTH = 690
-WIN_HEIGHT = 530
+WIN_WIDTH = 695
+WIN_HEIGHT = 535
 
 BG = "#202331"
 ACCENT = "#303754"
@@ -23,6 +23,7 @@ class Interface:
         self.win = Tk()
         self.win.geometry(f"{WIN_WIDTH}x{WIN_HEIGHT}")
         self.win.config(bg=BG)
+        self.win.resizable(False, False)
         self.win.title("Security Camera Interface")
         self.win.protocol("WM_DELETE_WINDOW", self.stop_capture)
 
@@ -52,11 +53,11 @@ class Interface:
         self.frame_buffer = []
         self.create_window()
 
-        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=660, height=500, bg=BG, fill=ACCENT)
+        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=665, height=505, bg=BG, fill=ACCENT)
         self.frame_container.canvas.place(x=15, y=15)
 
-        self.frame_label = Label(self.frame_container.canvas, bg="black", fg="white",
-                                 text="Security Camera Interface")
+        self.frame_label = Label(self.frame_container.canvas, bg=ACCENT, fg="white",
+                                 text="Loading camera feed...")
         self.frame_label.place(x=10, y=10)
 
         global ui
