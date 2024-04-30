@@ -10,6 +10,8 @@ import numpy as np
 import interface
 
 output_path = "videos"
+current_capture_folder = f"{datetime.now().strftime("cap-%Y-%m-%d-%H-%M-%S")}"
+current_capture_file = f"{datetime.now().strftime("cap-%Y-%m-%d-%H-%M-%S.mp4")}"
 circle = "assets/rec.png"
 # Set the font, scale, color, and thickness
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -63,9 +65,14 @@ def set_fixed_white_balance(cap):
 
 
 def capture_image():
-    global main_ui, stop_thread_event, output_path, recording
+    global main_ui, stop_thread_event, output_path, recording, current_capture_folder, current_capture_file
+
     if not os.path.exists(output_path):
         os.mkdir(output_path)
+    os.mkdir(f"{output_path}/{current_capture_folder}")
+
+    current_capture_file = f"{datetime.now().strftime("cap-%Y-%m-%d-%H-%M-%S.mp4")}"
+
     main_ui = interface.ui
     stop_thread_event = threading.Event()
 
@@ -77,10 +84,8 @@ def capture_image():
 
     date = f"{datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}"
 
-    output_path = f"{output_path}/video-{date}.mp4"
-    print(output_path)
-
-    writer = cv2.VideoWriter(output_path, codec, fps, (w, h))
+    # output_path = f"{output_path}/video-{date}.mp4"
+    # print(output_path)
 
     if not cap.isOpened():
         print("Unable to open camera")
@@ -128,16 +133,21 @@ def capture_image():
             rec_start_time = None
 
         if float(percent_change) > float(interface.sensibility):
-            rec_start_time = time.time()
-            writer.write(add_text(frame))
             if recording is False:
+                current_capture_file = f"{datetime.now().strftime("cap-%Y-%m-%d-%H-%M-%S.mp4")}"
+                writer = cv2.VideoWriter(f"{output_path}/{current_capture_folder}/{current_capture_file}", codec, fps,
+                                         (w, h))
+                print(f"New capture started: {output_path}/{current_capture_folder}/{current_capture_file}")
                 recording = True
+                writer.write(add_text(frame))
+            rec_start_time = time.time()
 
         if recording is True and rec_start_time is not None:
             writer.write(add_text(frame))
             if float(time.time() - rec_start_time) > float(interface.rec_sec):
                 recording = False
-
+                if writer.isOpened():
+                    writer.release()
         # Update previous frame
         prev_frame = frame.copy()
 
