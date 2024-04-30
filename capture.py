@@ -148,6 +148,7 @@ def capture_image():
                 recording = False
                 if writer.isOpened():
                     writer.release()
+                    main_ui.create_history()
         # Update previous frame
         prev_frame = frame.copy()
 
