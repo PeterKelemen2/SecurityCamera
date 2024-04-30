@@ -100,7 +100,7 @@ def capture_image():
 
     set_fixed_white_balance(cap)
 
-    while not stop_thread_event.is_set():
+    while not stop_thread_event.is_set() or not KeyboardInterrupt:
         ret, frame = cap.read()
         if not ret:
             print("Error: Can't receive frame (stream end?). Exiting ...")
@@ -149,7 +149,8 @@ def capture_image():
                 recording = False
                 if writer.isOpened():
                     writer.release()
-                    main_ui.create_history()
+                    if main_ui is not None:
+                        main_ui.create_history()
         # Update previous frame
         prev_frame = frame.copy()
 
