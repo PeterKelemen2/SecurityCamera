@@ -127,7 +127,7 @@ def capture_image():
         if recording is False:
             rec_start_time = None
 
-        if float(percent_change) > 5.0:
+        if float(percent_change) > float(interface.sensibility):
             rec_start_time = time.time()
             writer.write(add_text(frame))
             if recording is False:

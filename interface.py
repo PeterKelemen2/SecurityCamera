@@ -21,6 +21,7 @@ ui = None
 conf = config.load_config()
 rec_sec = conf["rec_sec"]
 sensibility = conf["sensibility"]
+s_map = {"Low": 10, "Medium": 5, "High": 2}
 
 
 class Interface:
@@ -110,15 +111,13 @@ class Interface:
         options = ["Low", "Medium", "High"]
         selected_option = tkinter.StringVar()
 
-        s_map = {"Low": 1, "Medium": 2, "High": 3}
         selected_option.set([key for key, value in s_map.items() if value == sensibility])
 
         def on_option_change(selection):
             global sensibility
             if selection != sensibility:
-                sensibility = selection
-                config.save_config(config.Settings(rec_sec=rec_sec, sensibility=s_map[sensibility]))
-                print(s_map[sensibility], sensibility)
+                sensibility = s_map[selection]
+                config.save_config(config.Settings(rec_sec=rec_sec, sensibility=sensibility))
 
         self.sensibility_option_menu = tkinter.OptionMenu(self.frame_container.canvas, selected_option, *options,
                                                           command=on_option_change)
