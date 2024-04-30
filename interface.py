@@ -11,7 +11,7 @@ import config
 import custom_ui
 import main
 
-WIN_WIDTH = 800
+WIN_WIDTH = 900
 WIN_HEIGHT = 600
 
 BG = "#202331"
@@ -62,7 +62,7 @@ class Interface:
         self.is_paused = False
         self.create_window()
 
-        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=770, height=WIN_HEIGHT - 30, bg=BG,
+        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=870, height=WIN_HEIGHT - 30, bg=BG,
                                                           fill=ACCENT)
         self.frame_container.canvas.place(x=15, y=15)
 
@@ -98,4 +98,9 @@ class Interface:
 
         self.rec_sec_option_menu = tkinter.OptionMenu(self.frame_container.canvas, selected_option, *options,
                                                       command=on_option_change)
-        self.rec_sec_option_menu.place(x=700, y=15)
+        self.rec_sec_option_menu.config(width=2, highlightbackground=BG)
+        self.rec_sec_option_menu.place(x=870 - self.rec_sec_option_menu.winfo_reqwidth() - 20, y=15)
+
+        self.rec_sec_label = Label(self.frame_container.canvas, text="Recording seconds:", bg=ACCENT, fg="white",
+                                   justify="left")
+        self.rec_sec_label.place(x=670, y=18)
