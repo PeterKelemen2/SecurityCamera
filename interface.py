@@ -21,7 +21,7 @@ ui = None
 conf = config.load_config()
 rec_sec = conf["rec_sec"]
 sensibility = conf["sensibility"]
-s_map = {"Low": 10, "Medium": 5, "High": 2}
+s_map = {"Low": 20, "Medium": 10, "High": 2}
 
 
 class Interface:
