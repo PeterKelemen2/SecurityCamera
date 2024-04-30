@@ -1,5 +1,4 @@
 import datetime
-import os
 import time
 import tkinter
 from tkinter import Label, Tk, Button
@@ -11,7 +10,6 @@ import capture
 import config
 import custom_ui
 import main
-import vlc_handler
 
 WIN_WIDTH = 1240
 WIN_HEIGHT = 600
@@ -140,27 +138,16 @@ class Interface:
         self.folder_labels_list = []
         for i in range(len(self.folders)):
             if self.folder_files[i] is not None:
-                # print("\n", self.folders[i])
+                print("\n", self.folders[i])
 
                 self.folder_labels_list.append(
                     Label(self.history_container.canvas, text=str(self.folders[i]), bg=ACCENT, fg="white"))
-                full_files_path = [
-                    f"{os.path.abspath(capture.output_path)}\\{self.folders[i]}\\{file}" for file
-                    in
-                    self.folder_files[i]]
-                print(full_files_path)
-                self.folder_labels_list[-1].bind("<Button-1>",
-                                                 lambda event, files=full_files_path: self.play_vlc_playlist(
-                                                     files))
 
-                # for file in self.folder_files[i]:
-                #     print(f"    └{file}")
+                for file in self.folder_files[i]:
+                    print(f"    └{file}")
             else:
                 print(self.folders[i])
 
         for i in range(0, len(self.folder_labels_list)):
             self.folder_labels_list[i].place(x=10, y=i * 25 + 30)
             print(str(i * 20 + 30))
-
-    def play_vlc_playlist(self, playlist):
-        vlc_handler.open_video(playlist)
