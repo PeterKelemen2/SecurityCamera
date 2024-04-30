@@ -35,6 +35,8 @@ class Interface:
         self.win.title("Security Camera Interface")
         self.win.protocol("WM_DELETE_WINDOW", self.stop_capture)
 
+        capture.main_ui = self
+
     def stop_capture(self):
         capture.set_stop_thread_event()
         time.sleep(0.2)
@@ -86,7 +88,7 @@ class Interface:
         self.create_precision_dropdown()
         self.create_history()
 
-        capture.run_capture_on_thread()
+        # capture.run_capture_on_thread()
         self.win.after(32, self.schedule_frame_update)
         self.win.mainloop()
 
