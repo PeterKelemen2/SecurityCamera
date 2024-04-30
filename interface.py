@@ -11,7 +11,7 @@ import config
 import custom_ui
 import main
 
-WIN_WIDTH = 930
+WIN_WIDTH = 1240
 WIN_HEIGHT = 600
 
 BG = "#202331"
@@ -36,7 +36,8 @@ class Interface:
     def stop_capture(self):
         capture.set_stop_thread_event()
         time.sleep(0.2)
-        capture.thread.join()
+        if capture.thread is not None:
+            capture.thread.join()
         self.win.destroy()
 
     def schedule_frame_update(self):
@@ -68,8 +69,8 @@ class Interface:
                                                           fill=ACCENT)
         self.frame_container.canvas.place(x=15, y=15)
 
-        self.frame_label = Label(self.frame_container.canvas, bg=BG, fg="white",
-                                 text="Loading camera feed...")
+        self.frame_label = Label(self.frame_container.canvas, bg=ACCENT, fg="white",
+                                 text="Loading camera feed...", font=custom_ui.JET_FONT)
         self.frame_label.place(x=10, y=10)
 
         self.pause_stream_button = Button(self.frame_container.canvas, text="Pause", bg=ACCENT, fg="white", width=15,
@@ -81,9 +82,10 @@ class Interface:
 
         self.create_rec_sec_dropdown()
         self.create_precision_dropdown()
+        self.create_history()
 
-        capture.run_capture_on_thread()
-        self.win.after(32, self.schedule_frame_update)
+        # capture.run_capture_on_thread()
+        # self.win.after(32, self.schedule_frame_update)
         self.win.mainloop()
 
     def create_rec_sec_dropdown(self):
@@ -127,3 +129,25 @@ class Interface:
         self.sensibility_label = Label(self.frame_container.canvas, text="Sensibility:", bg=ACCENT, fg="white",
                                        justify="left")
         self.sensibility_label.place(x=670, y=58)
+
+    def create_history(self):
+        self.history_container = custom_ui.CustomLabelFrame(self.win, width=300, height=WIN_HEIGHT - 30, bg=BG,
+                                                            fill=ACCENT, text="History")
+        self.history_container.canvas.place(x=925, y=15)
+        self.folders, self.folder_files = capture.get_history_list()
+        self.folder_labels_list = []
+        for i in range(len(self.folders)):
+            if self.folder_files[i] is not None:
+                print("\n", self.folders[i])
+
+                self.folder_labels_list.append(
+                    Label(self.history_container.canvas, text=str(self.folders[i]), bg=ACCENT, fg="white"))
+
+                for file in self.folder_files[i]:
+                    print(f"    └{file}")
+            else:
+                print(self.folders[i])
+
+        for i in range(0, len(self.folder_labels_list)):
+            self.folder_labels_list[i].place(x=10, y=i * 25 + 30)
+            print(str(i * 20 + 30))

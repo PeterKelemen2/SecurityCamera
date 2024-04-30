@@ -24,12 +24,13 @@ BLACK = "#000000"
 DARK_FONT_COLOR = "#ffffff"
 LIGHT_FONT_COLOR = "#000000"
 FONT_COLOR = "#ffffff"
-TIME_FONT_SIZE = 12
+FONT_SIZE = 10
 BIG_FONT_SIZE = 14
-FONT = ("Ubuntu", TIME_FONT_SIZE)
-BOLD_FONT = ("Ubuntu", TIME_FONT_SIZE, "bold")
+FONT = ("Ubuntu", FONT_SIZE)
+BOLD_FONT = ("Ubuntu", FONT_SIZE, "bold")
 BIG_FONT = ("Ubuntu", BIG_FONT_SIZE)
 BIG_FONT_BOLD = ("Ubuntu", BIG_FONT_SIZE, "bold")
+JET_FONT = ("JetBrains Mono", FONT_SIZE)
 
 
 class CardItem:

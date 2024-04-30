@@ -155,6 +155,18 @@ def capture_image():
     writer.release()
 
 
+def get_history_list():
+    entries = os.listdir(output_path)
+    subfolders = [entry for entry in entries if os.path.isdir(os.path.join(output_path, entry))]
+
+    folder_files = []
+    for folder in subfolders:
+        files = os.listdir(os.path.join(output_path, folder))
+        folder_files.append(os.listdir(os.path.join(output_path, folder)))
+
+    return subfolders, folder_files
+
+
 def run_capture_on_thread():
     global thread
     thread = threading.Thread(target=capture_image)
@@ -163,4 +175,5 @@ def run_capture_on_thread():
 
 def set_stop_thread_event():
     global stop_thread_event
-    stop_thread_event.set()
+    if stop_thread_event is not None:
+        stop_thread_event.set()
