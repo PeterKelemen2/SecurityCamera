@@ -3,8 +3,9 @@ import os.path
 
 
 class Settings:
-    def __init__(self, rec_sec=None):
+    def __init__(self, rec_sec=None, sensibility=None):
         self.rec_sec = rec_sec
+        self.sensibility = sensibility
 
     def to_dict(self):
         return self.__dict__
@@ -14,7 +15,7 @@ class Settings:
 
 
 config_path = "config.json"
-default = Settings(rec_sec=4)
+default = Settings(rec_sec=4, sensibility=1)
 
 
 def save_config(conf):
