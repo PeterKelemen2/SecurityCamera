@@ -1,9 +1,15 @@
 import capture
+import config
 import interface
+
+conf = None
 
 
 def main():
-    # capture.capture_image()
+    global conf
+    conf = config.load_config()
+    print(conf["rec_sec"])
+
     user_interface = interface.Interface()
 
 

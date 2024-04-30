@@ -135,7 +135,7 @@ def capture_image():
 
         if recording is True and rec_start_time is not None:
             writer.write(add_text(frame))
-            if int(time.time() - rec_start_time) > 2:
+            if float(time.time() - rec_start_time) > float(interface.rec_sec):
                 recording = False
 
         # Update previous frame

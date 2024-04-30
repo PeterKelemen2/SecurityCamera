@@ -1,20 +1,25 @@
 import datetime
 import time
+import tkinter
 from tkinter import Label, Tk, Button
 
 import cv2
 from PIL import Image, ImageTk
 
 import capture
+import config
 import custom_ui
+import main
 
-WIN_WIDTH = 695
+WIN_WIDTH = 800
 WIN_HEIGHT = 600
 
 BG = "#202331"
 ACCENT = "#303754"
 
 ui = None
+conf = config.load_config()
+rec_sec = conf["rec_sec"]
 
 
 class Interface:
@@ -37,11 +42,7 @@ class Interface:
             self.update_frame(self.frame_buffer[0])
             self.frame_buffer = []
 
-        # if capture.recording:
-        #     self.rec_indicator.place(x=150, y=500)
-        # else:
-        #     self.rec_indicator.place_forget()
-        self.win.after(32, self.schedule_frame_update)
+        self.win.after(33, self.schedule_frame_update)
 
     def toggle_stream(self):
         self.is_paused = not self.is_paused
@@ -61,11 +62,11 @@ class Interface:
         self.is_paused = False
         self.create_window()
 
-        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=665, height=WIN_HEIGHT - 30, bg=BG,
+        self.frame_container = custom_ui.CustomLabelFrame(self.win, width=770, height=WIN_HEIGHT - 30, bg=BG,
                                                           fill=ACCENT)
         self.frame_container.canvas.place(x=15, y=15)
 
-        self.frame_label = Label(self.frame_container.canvas, bg=ACCENT, fg="white",
+        self.frame_label = Label(self.frame_container.canvas, bg=BG, fg="white",
                                  text="Loading camera feed...")
         self.frame_label.place(x=10, y=10)
 
@@ -76,6 +77,25 @@ class Interface:
         global ui
         ui = self
 
+        self.create_rec_sec_dropdown()
+
         capture.run_capture_on_thread()
         self.win.after(32, self.schedule_frame_update)
         self.win.mainloop()
+
+    def create_rec_sec_dropdown(self):
+        options = ["2", "5", "10"]
+
+        selected_option = tkinter.StringVar()
+        selected_option.set(str(rec_sec))
+
+        def on_option_change(selection):
+            global rec_sec
+            if int(selection) != rec_sec:
+                rec_sec = int(selection)
+                print(rec_sec)
+                config.save_config(config.Settings(rec_sec=rec_sec))
+
+        self.rec_sec_option_menu = tkinter.OptionMenu(self.frame_container.canvas, selected_option, *options,
+                                                      command=on_option_change)
+        self.rec_sec_option_menu.place(x=700, y=15)
