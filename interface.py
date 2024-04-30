@@ -86,8 +86,8 @@ class Interface:
         self.create_precision_dropdown()
         self.create_history()
 
-        # capture.run_capture_on_thread()
-        # self.win.after(32, self.schedule_frame_update)
+        capture.run_capture_on_thread()
+        self.win.after(32, self.schedule_frame_update)
         self.win.mainloop()
 
     def create_rec_sec_dropdown(self):
