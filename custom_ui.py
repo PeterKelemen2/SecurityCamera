@@ -5,7 +5,7 @@ from tkinter import PhotoImage, Canvas
 import PIL.ImageOps
 from PIL import Image, ImageTk
 
-# import custom_button
+import custom_button
 
 # import debug
 # import interface

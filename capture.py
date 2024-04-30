@@ -122,7 +122,7 @@ def capture_image():
         total_pixels = thresh_diff.size
         percent_change = f"{((significant_changes / total_pixels) * 100):.2f}"
 
-        print(f"Change: {percent_change}% | Recording: {recording}")
+        # print(f"Change: {percent_change}% | Recording: {recording}")
 
         if recording is False:
             rec_start_time = None
